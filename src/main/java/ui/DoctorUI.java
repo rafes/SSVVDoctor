@@ -103,9 +103,10 @@ public class DoctorUI {
 				String name = in.nextLine();
 				System.out.println("Enter address:");
 				String address = in.nextLine();
-				p = new Patient(cnp, name, address);//AICI!!!!!!!!!!!!!!!!!!!!!!!!
+				p = new Patient(name,cnp, address);//AICI!!!!!!!!!!!!!!!!!!!!!!!!
 				try {
-					ctrl.addPatient(p);	
+					ctrl.addPatient(p);
+					System.out.println("Patient "+p.toString()+" added successfully!");
 				}
 				catch (PatientException e) {
 					e.printStackTrace();

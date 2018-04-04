@@ -3,7 +3,7 @@ package model;
 public class Patient {
 	private String Patient_ID;
 	private String Name;
-	private String SSN;
+	private String cnp;
 	private String address;
 	private int consNum;
 	
@@ -11,11 +11,11 @@ public class Patient {
 	
 	public Patient() {};
 	
-	public Patient(String Name, String SSN, String address) 
+	public Patient(String Name, String cnp, String address)
 	{
-			this.Patient_ID = SSN;
+			this.Patient_ID = cnp;
 			this.Name = Name;
-			this.SSN = SSN;
+			this.cnp = cnp;
 			this.address = address;	
 			this.consNum = 0;
 	}
@@ -33,11 +33,11 @@ public class Patient {
 	public void setName(String name) {
 		Name = name;
 	}
-	public String getSSN() {
-		return SSN;
+	public String getCnp() {
+		return cnp;
 	}
-	public void setSSN(String sSN) {
-		SSN = sSN;
+	public void setCnp(String sSN) {
+		cnp = sSN;
 	}
 	public String getAddress() {
 		return address;
@@ -56,7 +56,7 @@ public class Patient {
 	
 	/** Others */
 	public String toString() {
-	    return Name + "," + SSN + "," +address;
+	    return Name + "," + cnp + "," +address;
 	//	return Name + "," + consNum;
 	}
 }
