@@ -74,22 +74,28 @@ public class Repository {
     }
 
     public void addConsultation(String consID, String cnp, String diag, List<String> meds, String date)
-            throws ConsultationException {
+            throws ConsultationException,PatientException {
         if (meds == null)
             throw new ConsultationException("Medication string is null");
 
-        if (consID != null && cnp != null && diag != null && meds.size() != 0
-                && patientExists(cnp) && this.getConsultationById(consID) == -1) {
-            Consultation c = new Consultation(consID, cnp, diag, meds, date);
-            try {
-                this.saveConsultationToFile(c);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (consID != null && cnp != null && diag != null && meds.size() != 0 && this.getConsultationById(consID) == -1) {
+            if(patientExists(cnp) ) {
+                Consultation c = new Consultation(consID, cnp, diag, meds, date);
+                consultationList.add(c);
+               /* try {
+                    this.saveConsultationToFile(c);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+                consultationList.add(c);
+                //Patient p = new Patient();
+                //p = this.getPatientList().get(this.getPatientBySSN(c.getPatientSSN()));
+                // p.setConsNum(p.getConsNum() + 1);
             }
-
-            //Patient p = new Patient();
-            //p = this.getPatientList().get(this.getPatientBySSN(c.getPatientSSN()));
-            // p.setConsNum(p.getConsNum() + 1);
+            else
+            {
+                throw new PatientException("Inexistent patient");
+            }
         } else {
             throw new ConsultationException("invalid arguments");
         }

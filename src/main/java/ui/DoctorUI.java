@@ -133,6 +133,11 @@ public class DoctorUI {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				catch(PatientException e)
+				{
+
+				}
+
 				System.out.println("> Consultation (" + consID + ") has been successfully added.");
 			}
 			if(cmd==3)

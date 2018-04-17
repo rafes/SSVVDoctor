@@ -23,8 +23,8 @@ public class DoctorController {
 
     public DoctorController(Repository rep) {
         this.rep = rep;
-        this.PatientList = rep.getPatientList();
-        this.ConsultationList = rep.getConsultationList();
+        //this.PatientList = rep.getPatientList();
+        //this.ConsultationList = rep.getConsultationList();
         // Get list from file in order to avoid duplicates.
     }
 
@@ -87,7 +87,7 @@ public class DoctorController {
     // diagnostic, prescription drugs)
 
     public void addConsultation(String consID, String patientSSN, String diag,
-                                List<String> meds, String date) throws ConsultationException {
+                                List<String> meds, String date) throws ConsultationException,PatientException {
         this.rep.addConsultation(consID,patientSSN,diag,meds,date);
     }
 
