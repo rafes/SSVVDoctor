@@ -37,18 +37,18 @@ public class IncrementalTest {
 
     @Test(expected = PatientException.class)
     public void methodA() throws Exception {
-        System.out.println(repo);
-        System.out.println(ctrl);
         int size=ctrl.getPatientList().size();
         assertEquals(size,0);
         ctrl.addPatient(p1.getName(),p1.getCnp(),p1.getAddress());
         assertEquals(ctrl.getPatientList().size(),1);
         ctrl.addPatient(p2);
         assertEquals(ctrl.getPatientList().size(),1);
+        System.out.println("A");
     }
 
     @Test
     public void methodAB() throws Exception {
+        System.out.println("AB");
         assertEquals(ctrl1.getPatientList().size(),0);
         ctrl1.addPatient(p3.getName(),p3.getCnp(),p3.getAddress());
         assertEquals(ctrl1.getPatientList().size(),1);
@@ -58,6 +58,7 @@ public class IncrementalTest {
 
     @Test
     public void methodABC() throws Exception {
+        System.out.println("ABC");
         assertEquals(ctrl.getPatientList().size(),0);
         ctrl.addPatient(p1.getName(),p1.getCnp(),p1.getAddress());
         assertEquals(ctrl.getPatientList().size(),1);
