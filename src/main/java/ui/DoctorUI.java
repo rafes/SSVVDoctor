@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -47,6 +48,8 @@ public class DoctorUI {
 		menu +="\t 1 - to add a new patient; \n";
 		menu +="\t 2 - to add a new consultation; \n";
 		menu +="\t 3 - to list all the patients, having a certain disease; \n";
+		menu +="\t 4 -  to list all consultations;\n";
+		menu +="\t 5 -  to list all patients;\n";
 		menu +="\t 0 - exit \n";
 		
 		System.out.println(menu);
@@ -109,7 +112,7 @@ public class DoctorUI {
 					System.out.println("Patient "+p.toString()+" added successfully!");
 				}
 				catch (PatientException e) {
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}			
 				
 			}
@@ -128,7 +131,7 @@ public class DoctorUI {
 				String date = in.nextLine();
 //				c = new Consultation(consID, patientSSN, diag, meds, date);
 				try {
-					ctrl.addConsultation(consID, patientSSN, diag, meds, date);
+					ctrl.addConsultation(new Consultation(consID, patientSSN, diag, meds, date));
 				} catch (ConsultationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -153,7 +156,22 @@ public class DoctorUI {
 					e.printStackTrace();
 				}
 			}
-
+			if(cmd==4)
+			{
+				System.out.println("Consultations");
+				for(Consultation  c: ctrl.getConsultationList())
+				{
+					System.out.println(c.toString());
+				}
+			}
+			if(cmd==5)
+			{
+				System.out.println("Patients");
+				for(Patient p:ctrl.getPatientList())
+				{
+					System.out.println(p.toString());
+				}
+			}
 			printMenu();
 			cmd=in.nextInt();
 			in.nextLine();

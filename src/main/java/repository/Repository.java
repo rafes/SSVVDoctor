@@ -1,11 +1,7 @@
 package repository;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,37 +23,11 @@ public class Repository {
     public Repository(String patients, String consultations) {
         this.patientsFile = patients;
         this.consultationsFile = consultations;
-
-        consultationList = new ArrayList<Consultation>();
-        patientList = new ArrayList<Patient>();
+        consultationList=getConsultationList();
+        patientList=getPatientList();
     }
 
     public Repository() {
-        consultationList = new ArrayList<Consultation>();
-        patientList = new ArrayList<Patient>();
-    }
-
-    public void cleanFiles() {
-        FileWriter fw;
-        try {
-            fw = new FileWriter(patientsFile);
-            PrintWriter out = new PrintWriter(fw);
-            out.print("");
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        FileWriter fwc;
-        try {
-            fwc = new FileWriter(consultationsFile);
-            PrintWriter out = new PrintWriter(fwc);
-            out.print("");
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         consultationList = new ArrayList<Consultation>();
         patientList = new ArrayList<Patient>();
     }
@@ -73,27 +43,26 @@ public class Repository {
         patientList.add(p);
     }
 
+    public ArrayList<Patient> GetPatients()
+    {
+        return patientList;
+    }
+
+    public ArrayList<Consultation> GetConsultations()
+    {
+        return consultationList;
+    }
+
     public void addConsultation(String consID, String cnp, String diag, List<String> meds, String date)
-            throws ConsultationException,PatientException {
+            throws ConsultationException, PatientException {
         if (meds == null)
             throw new ConsultationException("Medication string is null");
 
         if (consID != null && cnp != null && diag != null && meds.size() != 0 && this.getConsultationById(consID) == -1) {
-            if(patientExists(cnp) ) {
+            if (patientExists(cnp)) {
                 Consultation c = new Consultation(consID, cnp, diag, meds, date);
                 consultationList.add(c);
-               /* try {
-                    this.saveConsultationToFile(c);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-                consultationList.add(c);
-                //Patient p = new Patient();
-                //p = this.getPatientList().get(this.getPatientBySSN(c.getPatientSSN()));
-                // p.setConsNum(p.getConsNum() + 1);
-            }
-            else
-            {
+            } else {
                 throw new PatientException("Inexistent patient");
             }
         } else {
@@ -159,8 +128,8 @@ public class Repository {
         return la;
     }
 
-    public List<Patient> getPatientList() {
-        List<Patient> lp = new ArrayList<Patient>();
+    private ArrayList<Patient> getPatientList() {
+        ArrayList<Patient> lp = new ArrayList<Patient>();
         try {
             String[] tokens = getPatientsFromFile();
 
@@ -170,7 +139,7 @@ public class Repository {
             while (i < tokens.length) {
                 tok = tokens[i];
                 pat = tok.split(",");
-                lp.add(new Patient(pat[0], pat[1], pat[2]));
+                lp.add(new Patient(pat[1], pat[0], pat[2]));
                 i = i + 1;
             }
 
@@ -181,26 +150,18 @@ public class Repository {
         return lp;
     }
 
-    public List<Consultation> getConsultationList() {
-        List<Consultation> lp = new ArrayList<Consultation>();
+    private ArrayList<Consultation> getConsultationList() {
+
+        ArrayList<Consultation> lp = new ArrayList<Consultation>();
         try {
-            String[] tokens = getConsultationsFromFile();
-
-
             String tok = new String();
             String[] cons;
-            String[] meds;
-            List<String> med = new ArrayList<String>();
+            String[] tokens=getConsultationsFromFile();
             int i = 0;
             while (i < tokens.length) {
                 tok = tokens[i];
                 cons = tok.split(",");
-                meds = cons[3].split("\\+");
-                Consultation consultation = new Consultation(cons[0], cons[1], cons[2], med, cons[4]);
-                for (int j = 0; j < meds.length - 1; j++) {
-                    consultation.getMeds().add(meds[j]);
-                }
-                lp.add(consultation);
+                lp.add(new Consultation(cons[0], cons[1], cons[2],cons[3]));
                 i = i + 1;
             }
 
@@ -213,49 +174,17 @@ public class Repository {
 
     public void savePatientToFile(Patient p) throws IOException        // save to file
     {
-        int n = 0;
-        BufferedReader in = new BufferedReader(new FileReader(patientsFile));
-        while ((in.readLine()) != null)
-            n++;
-        in.close();
-        String[] sl = new String[n];
-        String str;
-        int i = 0;
-        in = new BufferedReader(new FileReader(patientsFile));
-        while ((str = in.readLine()) != null) {
-            sl[i] = str;
-            i++;
-        }
-        in.close(); // append
-        FileWriter fw = new FileWriter(patientsFile);
-        PrintWriter out = new PrintWriter(fw);
-        for (i = 1; i < sl.length - 1; i++)
-            out.println(sl[i]);
-        out.println(p.toString());
-        out.close();
+        FileWriter fw = new FileWriter(patientsFile, true); //the true will append the new data
+        fw.write(p.toString() + "\n");//appends the string to the file
+        fw.close();
+
     }
 
     public void saveConsultationToFile(Consultation c) throws IOException        // save to file
     {
-        int n = 0;
-        BufferedReader in = new BufferedReader(new FileReader(consultationsFile));
-        while ((in.readLine()) != null)
-            n++;
-        in.close();
-        String[] sl = new String[n];
-        String str;
-        int i = 0;
-        in = new BufferedReader(new FileReader(consultationsFile));
-        while ((str = in.readLine()) != null) {
-            sl[i] = str;
-            i++;
-        }
-        in.close(); // append
-        FileWriter fw = new FileWriter(consultationsFile);
-        PrintWriter out = new PrintWriter(fw);
-        for (i = 0; i < sl.length - 1; i++)
-            out.println(sl[i]);
-        out.println(c.toString());
-        out.close();
+        FileWriter fw = new FileWriter(consultationsFile, true);
+        System.out.println("Writing to file the consultattion");
+        fw.write(c.toString() + "\n");//appends the string to the file
+        fw.close();
     }
 }

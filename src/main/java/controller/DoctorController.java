@@ -22,34 +22,34 @@ public class DoctorController {
      */
 
     public DoctorController(Repository rep) {
+
+        PatientList=rep.GetPatients();
+        ConsultationList=rep.GetConsultations();
         this.rep = rep;
-        //this.PatientList = rep.getPatientList();
-        //this.ConsultationList = rep.getConsultationList();
-        // Get list from file in order to avoid duplicates.
     }
 
     /**
      * Getters
      */
     public List<Patient> getPatientList() {
-        return PatientList;
+        return rep.GetPatients();
     }
 
     public List<Consultation> getConsultationList() {
-        return ConsultationList;
+        return rep.GetConsultations();
     }
 
     public void setConsulationList(List<Consultation> consultationList) {
         ConsultationList = consultationList;
     }
 
-    public int getPatientBySSN(String SSN) {
+    public Patient getPatientBySSN(String SSN) {
         for (int i = 0; i < PatientList.size(); i++) {
             if (PatientList.get(i).getCnp().equals(SSN))
-                return i;
+                return PatientList.get(i) ;
         }
 
-        return -1;
+        return null;
     }
 
     public int getConsByID(String ID) {
@@ -77,7 +77,18 @@ public class DoctorController {
     public void addPatient(Patient p) throws PatientException {
         rep.addPatient(p);
         try {
+            System.out.println("Saving to file");
             rep.savePatientToFile(p);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addConsultation(Consultation c)throws ConsultationException,PatientException
+    {
+        rep.addConsultation(c.getConsID(),c.getPatientSSN(),c.getDiag(),c.getMeds(),c.getConsultation_date());
+        try {
+            rep.saveConsultationToFile(c);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,57 +99,35 @@ public class DoctorController {
 
     public void addConsultation(String consID, String patientSSN, String diag,
                                 List<String> meds, String date) throws ConsultationException,PatientException {
-        this.rep.addConsultation(consID,patientSSN,diag,meds,date);
+        rep.addConsultation(consID,patientSSN,diag,meds,date);
     }
 
-    public List<Patient> getPatientsWithDisease(String disease) throws PatientException {
-        List<Consultation> c = this.getConsultationList();
-        List<Patient> p = new ArrayList<Patient>();
-        if (disease != null) {
-            if (disease.length() == 0) {
-                throw new PatientException("Empty disease provided");
-            }
-            int chk = 1;
+    public void addPatient(String name,String cnp,String address)throws PatientException
+    {
+        rep.addPatient(new Patient(name,cnp,address));
+    }
 
-            for (int i = 0; i < c.size(); i++) {
-                if (c.get(i).getDiag().toLowerCase()
-                        .contains(disease.toLowerCase())) // so that it is case
-                // insensitive
-                {
-                    for (int j = 0; j < p.size(); j++) // verify patient was
-                    // not already added
-                    {
-                        if (p.get(j).getCnp().equals(c.get(i).getPatientSSN())) {
-                            chk = p.get(j).getConsNum();
-                        }
-                    }
 
-                    if (chk == 1) {
-                        p.add(this.getPatientList().get(
-                                this.getPatientBySSN(c.get(i).getPatientSSN()))); // get
-                        // Patient
-                        // by
-                        // SSN
-                    }
-                    chk = 1;
+    public ArrayList<Patient> getPatientsWithDisease(String disease) throws PatientException {
+        ArrayList<Patient> filteredPatients=new ArrayList<Patient>();
+        if(disease==null)
+        {
+            throw new PatientException("Empty disease");
+        }
+        for(Consultation c: getConsultationList())
+        {
+            if(c.getDiag().compareTo(disease)==0)
+            {
+                Patient p=getPatientBySSN(c.getPatientSSN());
+                if(p!=null) {
+                    filteredPatients.add(p);
+                }
+                else{
+                    throw new PatientException("No patient with this cnp ! Invalid consultation!");
                 }
             }
-
-            // Sort the list
-
-            Patient paux = new Patient();
-
-            for (int i = 0; i < p.size(); i++)
-                for (int j = i + 1; j < p.size() - 1; j++)
-                    if (p.get(j - 1).getConsNum() < p.get(j).getConsNum()) {
-                        paux = p.get(j - 1);
-                        p.set(j - 1, p.get(j));
-                        p.set(j, paux);
-                    }
-        } else {
-            throw new PatientException("Null disease parameter provided");
         }
-        return p;
+        return filteredPatients;
     }
 
 	/*

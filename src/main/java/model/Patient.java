@@ -56,7 +56,7 @@ public class Patient {
 	
 	/** Others */
 	public String toString() {
-	    return Name + "," + cnp + "," +address;
+	    return cnp + ","+ Name  +  "," +address;
 	//	return Name + "," + consNum;
 	}
 }
